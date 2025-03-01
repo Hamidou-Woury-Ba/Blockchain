@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Titres Fonciers</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="">
+        <h1>Gestion des Titres Fonciers</h1>
+
+        <!-- Lien vers le formulaire d'ajout -->
+        <a href="/ajouter-titre.html" class="add-link">Ajouter un titre foncier</a>
+
+        <!-- Section pour afficher la liste des titres fonciers -->
+        <h2>Liste des Titres Fonciers</h2>
+
+        <!-- Bouton de rafraîchissement -->
+        <button id="listerTitres">Rafraîchir la liste</button>
+
+        <!-- Loader caché au départ -->
+        <div id="loader" class="loader"></div>
+
+        <!-- Tableau pour afficher les titres fonciers -->
+        <table id="titresTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Propriétaire</th>
+                    <th>Description</th>
+                    <th>Document Hash</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="titresList">
+                <!-- Les titres fonciers seront affichés ici -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function afficherTitresFonciers() {
+            const button = document.getElementById('listerTitres');
+            const loader = document.getElementById('loader');
+            const titresList = document.getElementById('titresList');
+
+            // Afficher le loader et désactiver le bouton
+            loader.style.display = 'block';
+            button.disabled = true;
+
+            try {
+                const response = await fetch('/listerTitresFonciers');
+                const titres = await response.json();
+
+                titresList.innerHTML = ''; // Vider le tableau avant de le remplir
+
+                if (titres.length === 0) {
+                    titresList.innerHTML = '<tr><td colspan="4">Aucun titre foncier trouvé.</td></tr>';
+                } else {
+                    titres.forEach(titre => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${titre.id}</td>
+                            <td>${titre.proprietaire}</td>
+                            <td>${titre.description}</td>
+                            <td>${titre.documentHash}</td>
+                            <td><a href="/modifier-titre.html?id=${titre.id}" class="modify-link">Modifier</a></td> <!-- Bouton Modifier -->
+                        `;
+                        titresList.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                console.error('Erreur :', error);
+                titresList.innerHTML = '<tr><td colspan="4">Erreur lors du chargement.</td></tr>';
+            } finally {
+                // Cacher le loader et réactiver le bouton
+                loader.style.display = 'none';
+                button.disabled = false;
+            }
+        }
+
+        // Rafraîchir la liste au clic du bouton
+        document.getElementById('listerTitres').addEventListener('click', afficherTitresFonciers);
+
+        // Charger la liste au démarrage
+        window.onload = afficherTitresFonciers;
+    </script>
+</body>
+
+</html>

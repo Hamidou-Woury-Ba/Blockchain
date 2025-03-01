@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un Titre Foncier</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="form-container">
+        <h1>Ajouter un Titre Foncier</h1>
+
+        <form id="titreForm">
+            <div class="form-group">
+                <label for="id">ID :</label>
+                <input type="text" id="id" name="id" required>
+            </div>
+
+            <div class="form-group">
+                <label for="proprietaire">Propriétaire :</label>
+                <input type="text" id="proprietaire" name="proprietaire" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description :</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="documentHash">Document Hash :</label>
+                <input type="text" id="documentHash" name="documentHash" required>
+            </div>
+
+            <button type="submit" class="btn">Créer le titre foncier</button>
+        </form>
+
+        <a href="/" class="back-btn">← Retour à la liste</a>
+
+        <p id="responseMessage"></p>
+    </div>
+
+
+    <script>
+        // Gérer la soumission du formulaire
+        document.getElementById('titreForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const id = document.getElementById('id').value;
+            const proprietaire = document.getElementById('proprietaire').value;
+            const description = document.getElementById('description').value;
+            const documentHash = document.getElementById('documentHash').value;
+
+            const responseMessage = document.getElementById('responseMessage');
+
+            try {
+                const response = await fetch('/creerTitreFoncier', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id, proprietaire, description, documentHash }),
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    responseMessage.textContent = 'Titre foncier créé avec succès !';
+                    responseMessage.style.color = 'green';
+                } else {
+                    responseMessage.textContent = `Erreur : ${result.error}`;
+                    responseMessage.style.color = 'red';
+                }
+            } catch (error) {
+                responseMessage.textContent = `Erreur : ${error.message}`;
+                responseMessage.style.color = 'red';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier un Titre Foncier</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="form-container">
+        <h1>Modifier un Titre Foncier</h1>
+
+        <!-- Formulaire de modification de titre foncier -->
+        <form id="modifierTitreForm">
+            <div class="form-group">
+                <label for="id">ID :</label>
+                <input type="text" id="id" name="id" readonly required>
+            </div>
+
+            <div class="form-group">
+                <label for="proprietaire">Propriétaire :</label>
+                <input type="text" id="proprietaire" name="proprietaire" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description :</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="documentHash">Document Hash :</label>
+                <input type="text" id="documentHash" name="documentHash" required>
+            </div>
+
+            <button type="submit" class="btn">Modifier le titre foncier</button>
+        </form>
+
+        <!-- Lien pour retourner à la liste des titres fonciers -->
+        <a href="/" class="back-btn">← Retour à la liste</a>
+
+        <!-- Message de réponse -->
+        <p id="responseMessage"></p>
+    </div>
+
+    <script>
+        // Récupérer l'ID du titre foncier à modifier depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        // Remplir le formulaire avec les détails du titre foncier
+        async function remplirFormulaire() {
+            try {
+                // Récupérer les détails du titre foncier depuis le serveur
+                const response = await fetch(`/recupererTitreFoncier?id=${id}`);
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la récupération des données');
+                }
+
+                const titre = await response.json();
+                if (!titre) {
+                    throw new Error('Titre foncier non trouvé');
+                }
+
+                // Remplir les champs du formulaire
+                document.getElementById('id').value = titre.id;
+                document.getElementById('proprietaire').value = titre.proprietaire;
+                document.getElementById('description').value = titre.description;
+                document.getElementById('documentHash').value = titre.documentHash;
+            } catch (error) {
+                console.error('Erreur :', error);
+                document.getElementById('responseMessage').textContent = 'Erreur lors du chargement des détails du titre foncier.';
+                document.getElementById('responseMessage').style.color = 'red';
+            }
+        }
+
+        // Gérer la soumission du formulaire
+        document.getElementById('modifierTitreForm').addEventListener('submit', async (event) => {
+            event.preventDefault(); // Empêcher le rechargement de la page
+
+            const id = document.getElementById('id').value;
+            const proprietaire = document.getElementById('proprietaire').value;
+            const description = document.getElementById('description').value;
+            const documentHash = document.getElementById('documentHash').value;
+
+            const responseMessage = document.getElementById('responseMessage');
+
+            try {
+                // Envoyer les données du formulaire au serveur
+                const response = await fetch('/modifierTitreFoncier', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id, proprietaire, description, documentHash }),
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    responseMessage.textContent = 'Titre foncier modifié avec succès !';
+                    responseMessage.style.color = 'green';
+                } else {
+                    responseMessage.textContent = `Erreur : ${result.error}`;
+                    responseMessage.style.color = 'red';
+                }
+            } catch (error) {
+                responseMessage.textContent = `Erreur : ${error.message}`;
+                responseMessage.style.color = 'red';
+            }
+        });
+
+        // Remplir le formulaire au chargement de la page
+        window.onload = remplirFormulaire;
+    </script>
+</body>
+
+</html>

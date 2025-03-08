@@ -12,7 +12,6 @@
     <div class="form-container">
         <h1>Modifier un Titre Foncier</h1>
 
-        <!-- Formulaire de modification de titre foncier -->
         <form id="modifierTitreForm">
             <div class="form-group">
                 <label for="id">ID :</label>
@@ -37,22 +36,17 @@
             <button type="submit" class="btn">Modifier le titre foncier</button>
         </form>
 
-        <!-- Lien pour retourner à la liste des titres fonciers -->
         <a href="/" class="back-btn">← Retour à la liste</a>
 
-        <!-- Message de réponse -->
         <p id="responseMessage"></p>
     </div>
 
     <script>
-        // Récupérer l'ID du titre foncier à modifier depuis l'URL
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get('id');
 
-        // Remplir le formulaire avec les détails du titre foncier
         async function remplirFormulaire() {
             try {
-                // Récupérer les détails du titre foncier depuis le serveur
                 const response = await fetch(`/recupererTitreFoncier?id=${id}`);
                 if (!response.ok) {
                     throw new Error('Erreur lors de la récupération des données');
@@ -63,7 +57,6 @@
                     throw new Error('Titre foncier non trouvé');
                 }
 
-                // Remplir les champs du formulaire
                 document.getElementById('id').value = titre.id;
                 document.getElementById('proprietaire').value = titre.proprietaire;
                 document.getElementById('description').value = titre.description;
@@ -75,9 +68,8 @@
             }
         }
 
-        // Gérer la soumission du formulaire
         document.getElementById('modifierTitreForm').addEventListener('submit', async (event) => {
-            event.preventDefault(); // Empêcher le rechargement de la page
+            event.preventDefault(); 
 
             const id = document.getElementById('id').value;
             const proprietaire = document.getElementById('proprietaire').value;
@@ -87,7 +79,6 @@
             const responseMessage = document.getElementById('responseMessage');
 
             try {
-                // Envoyer les données du formulaire au serveur
                 const response = await fetch('/modifierTitreFoncier', {
                     method: 'POST',
                     headers: {
@@ -110,7 +101,6 @@
             }
         });
 
-        // Remplir le formulaire au chargement de la page
         window.onload = remplirFormulaire;
     </script>
 </body>

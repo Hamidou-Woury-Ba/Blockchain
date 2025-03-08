@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supprimer un titre foncier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button.confirm {
+            background-color: #ff4d4d;
+            color: white;
+        }
+        .button.cancel {
+            background-color: #ccc;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Supprimer un titre foncier</h1>
+        <p>Êtes-vous sûr de vouloir supprimer ce titre foncier ?</p>
+        <button class="button confirm" id="confirmButton">Oui, supprimer</button>
+        <button class="button cancel" id="cancelButton">Annuler</button>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const titreId = urlParams.get('id');
+        console.log('ID du titre foncier :', titreId); 
+    
+        if (!titreId) {
+            alert('ID du titre foncier manquant');
+            window.location.href = '/';
+        }
+    
+        document.getElementById('confirmButton').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/supprimerTitreFoncier', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: titreId }),
+                });
+                console.log('Réponse de l\'API :', response); 
+    
+                const result = await response.json();
+                console.log('Résultat de la suppression :', result); 
+    
+                if (result.success) {
+                    alert('Titre foncier supprimé avec succès');
+                    window.location.href = '/';
+                } else {
+                    alert('Échec de la suppression : ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur :', error);
+                alert('Échec de la suppression du titre foncier');
+            }
+        });
+    
+        document.getElementById('cancelButton').addEventListener('click', () => {
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>

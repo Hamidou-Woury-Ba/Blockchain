@@ -191,6 +191,21 @@ func (s *SmartContract) ModifierTitreFoncier(ctx contractapi.TransactionContextI
     return ctx.GetStub().PutState(id, titreJSON)
 }
 
+// SupprimerTitreFoncier supprime un titre foncier du ledger
+func (s *SmartContract) SupprimerTitreFoncier(ctx contractapi.TransactionContextInterface, id string) error {
+    // Vérifier si le titre foncier existe
+    exists, err := s.TitreFoncierExists(ctx, id)
+    if err != nil {
+        return fmt.Errorf("erreur lors de la vérification de l'existence du titre foncier: %v", err)
+    }
+    if !exists {
+        return fmt.Errorf("le titre foncier avec l'ID %s n'existe pas", id)
+    }
+
+    // Supprimer le titre foncier du ledger
+    return ctx.GetStub().DelState(id)
+}
+
 // VerifyDocumentOnIPFS vérifie si un document existe sur IPFS
 func VerifyDocumentOnIPFS(cid string) (string, error) {
 	url := fmt.Sprintf("http://host.docker.internal:5001/api/v0/cat?arg=%s", cid) 
@@ -293,10 +308,9 @@ type HistoryEntry struct {
 }
 
 
-// UploadDocumentToIPFS upload un document sur IPFS et retourne le hash
 func UploadDocumentToIPFS(document []byte) (string, error) {
-    sh := ipfs.NewShell("localhost:5001") // Connectez-vous au nœud IPFS local
-    cid, err := sh.Add(bytes.NewReader(document)) // Convertir []byte en io.Reader
+    sh := ipfs.NewShell("localhost:5001") 
+    cid, err := sh.Add(bytes.NewReader(document)) 
     if err != nil {
         return "", fmt.Errorf("échec de l'upload du document sur IPFS: %v", err)
     }

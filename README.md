@@ -67,11 +67,17 @@ Tous ces scripts ont été écrits pour automatiser certaines tâches.
    ```sh
    cd fabric-samples/titre-foncier-app/
    ```
-2. Lancez le serveur Node.js :
+2. Lancer le script enrollUser.js pour enregistrer un utilisateur sur Hyperledger Fabric :
+   ```sh
+   node enrollUser.js
+   ```
+
+3. Lancez le serveur Node.js :
    ```sh
    node server.js
    ```
-3. Accédez à l'application via : [https://localhost:3443](https://localhost:3443)
+
+4. Accédez à l'application via : [https://localhost:3443](https://localhost:3443)
 
 ## Utilisation de l'application
 
